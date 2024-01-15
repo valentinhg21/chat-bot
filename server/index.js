@@ -6,10 +6,23 @@ import { createServer } from 'node:http'
 const PORT = process.env.PORT ?? 3000
 const app = express();
 const server = createServer(app);
-const io = new Server(server)
+const io = new Server(server, {
+    connectionStateRecovery: {
+        
+    }
+})
 
-io.on('connection', () => {
+io.on('connection', (socket) => {
     console.log('a user has connected!')
+
+    // Si se desconecta
+    socket.on('disconnect', () => {
+        console.log('an user has disconnect!')
+    })
+    // Si se envia un mensaje
+    socket.on('chat message', (msg) => {
+        io.emit('chat message', msg)
+    })
 })
 
 // Middlewares
